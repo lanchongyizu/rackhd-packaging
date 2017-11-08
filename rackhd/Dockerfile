@@ -6,20 +6,6 @@ RUN gpg -a --export 1285491434D8786F | apt-key add -
 RUN apt-get update
 RUN apt-get install -y srvadmin-idracadm7
 
-# Pull in fix to allow Graph.Dell.Wsman.UpdateSystemComponents to set
-# BiosBootSeq and HddSeq.
-#
-# NOTE: These are merged and will be in 2.30.0
-#
-# https://github.com/RackHD/on-taskgraph/pull/297/commits
-# https://github.com/RackHD/on-tasks/pull/521/commits
-
-COPY on-taskgraph-force-update-89395df.patch ./
-RUN patch -p1 -d /RackHD/on-taskgraph < on-taskgraph-force-update-89395df.patch
-
-COPY on-tasks-force-update-a851300.patch ./
-RUN patch -p1 -d /RackHD/on-tasks < on-tasks-force-update-a851300.patch
-
 # Pull in fix to properly format ipmi-user-list catalog data
 #
 # https://github.com/RackHD/on-tasks/pull/523
