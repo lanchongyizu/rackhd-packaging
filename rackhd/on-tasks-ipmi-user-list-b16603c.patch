@@ -1,0 +1,39 @@
+commit b16603c72625e88d4824fac2d27981d8d4e9e005
+Author: Gavin Scott <gavin_scott@dell.com>
+Date:   Wed Oct 11 14:46:51 2017 -0500
+
+    Fix ipmi-user-list catalog data
+    
+    Code that parsed `sudo ipmitool -c user list N` assumed there
+    would be a header row printed and built the user hash keys from
+    the first line. However `ipmitool user list` only prints the
+    headers when invoked without `-c` which puts it into CSV output
+    mode. When invoked with `-c` there is no header line and the
+    first user was getting eaten up and treated as the header.
+    
+    Example ipmitool output:
+    
+        monorail@monorail-micro:~$ sudo ipmitool user list 1
+        ID  Name             Callin  Link Auth  IPMI Msg   Channel Priv Limit
+        2   root             true    true       true       ADMINISTRATOR
+        monorail@monorail-micro:~$ sudo ipmitool user -c list 1
+        2,root,true,true,true,ADMINISTRATOR
+    
+    This fix hard-codes the header values as the header that is
+    printed when invoked without `-c` looks nigh-impossible to
+    parse. The previous code was also eating the first user because
+    that line was taken as the header line.
+
+diff --git a/lib/utils/job-utils/command-parser.js b/lib/utils/job-utils/command-parser.js
+index 4d55596..ae9f8fc 100755
+--- a/lib/utils/job-utils/command-parser.js
++++ b/lib/utils/job-utils/command-parser.js
+@@ -114,7 +114,7 @@ function commandParserFactory(Logger, Promise, _) {
+                     }
+                 });
+                 var parsed = {},
+-                    header = lines.shift().split(','),
++                    header = ['ID', 'Name', 'Callin', 'Link Auth', 'IPMI Msg', 'Channel Priv Limit'],
+                     columns = _.map(lines, function (line) {
+                         return line.split(',');
+                     });

@@ -1,0 +1,50 @@
+commit 08fb7abcfbc5e7ba6f502f0c8a428de43196cfed
+Author: Gavin Scott <gavin_scott@dell.com>
+Date:   Fri Nov 3 08:32:20 2017 -0500
+
+    Various fixes for UpdateSystemConfig after wsman refactor
+    
+    - Increase receive timeout as the underlying SMI service is a very
+      long-running synchronous REST service.
+    
+    - Need to return value from _handleSyncRequest()
+    
+    - JSON is already parsed by WsmanTool now
+    
+    SMI micro-service is currently implemented as a synchronous REST
+    service for a very long-running job. Updated the receive timeout to 30
+    minutes to account for this.
+
+diff --git a/lib/jobs/dell-wsman-update-systemcomponents.js b/lib/jobs/dell-wsman-update-systemcomponents.js
+index e2ba9d7..a6b3dc0 100644
+--- a/lib/jobs/dell-wsman-update-systemcomponents.js
++++ b/lib/jobs/dell-wsman-update-systemcomponents.js
+@@ -61,16 +61,17 @@ function DellWsmanUpdateSystemConfigComponentsFactory(
+         .then(function(obm){
+             return self.updateComponents(obm);
+         })
+-        .then(function(){
++        .then(function(ret){
+             if(self.options.cleanup === true) {
+                fs.unlink(`${self.options.shareName}/${self.options.fileName}`, function() {});
+             }
++            return ret;
+         });
+     };
+ 
+     DellWsmanUpdateSystemConfigComponentsJob.prototype._handleSyncResponse = function (response) {
+         logger.info('Response from SCP Microservice for UpdateComponents: ' + response.body);
+-        var json = JSON.parse(response.body);
++        var json = response.body;
+         logger.info('Status from SCP Microservice for Update System Configuration:  ' + json["status"]);
+         if(json["status"] === "OK") {
+             return response;
+@@ -101,7 +102,7 @@ function DellWsmanUpdateSystemConfigComponentsFactory(
+ 
+         var wsman = new WsmanTool(self.dell.gateway, {
+             verifySSl: false,
+-            recvTimeoutMs: 60000
++            recvTimeoutMs: 1800000
+         });
+         return wsman.clientRequest(
+             self.dell.services.configuration.updateComponents,

@@ -1,0 +1,36 @@
+commit 89395dff96e28348ec4df0efb07e2ab796a38422
+Author: Gavin Scott <gavin_scott@dell.com>
+Date:   Tue Oct 10 20:49:03 2017 -0500
+
+    Add forceUpdate option to UpdateSystemComponents
+    
+    Add new smi-service-dell-server-configuration-profile updateComponents
+    API forceUpdate parameter to Graph.Dell.Wsman.UpdateSystemComponents.
+    
+    When forceUpdate is set to true it allows the service to set attribute
+    values that are normally commented out in the exported SCP file
+    (i.e. the file that can be obtained by running
+    Graph.Dell.Wsman.Export.SCP). Examples of commented out attributes are
+    the BIOS boot sequence and hard drive sequence. When set to false (the
+    default and original UpdateSysystemComponetns behavior) those values
+    are silently discarded.
+    
+    The forceUpdate flag was added in
+    smi-service-dell-server-configuration-profile [PR #16][1].
+    
+    [1]: https://github.com/RackHD/smi-service-dell-server-configuration-profile/pull/16
+
+diff --git a/lib/graphs/dell-wsman-update-systemcomponents-graph.js b/lib/graphs/dell-wsman-update-systemcomponents-graph.js
+index 61208f6..3ccc5c5 100644
+--- a/lib/graphs/dell-wsman-update-systemcomponents-graph.js
++++ b/lib/graphs/dell-wsman-update-systemcomponents-graph.js
+@@ -16,7 +16,8 @@ module.exports = {
+             fileName: null,
+             shutdownType: null,
+             serverComponents: null,
+-            cleanup: null
++            cleanup: null,
++            forceUpdate: null
+         }
+     },
+     tasks: [

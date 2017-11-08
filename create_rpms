@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# Copyright (c) 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
+# Dell EMC Confidential/Proprietary Information
+#
+
+# check if --debug flag is set
+if [[ "$1" == "--debug" || "$1" == "-d" ]]; then
+  set -x
+  shift
+  echo $*
+fi
+
+SCRIPT_ROOT=$(realpath $(dirname $0))
+cd $SCRIPT_ROOT
+
+# clean up old jobs
+if [[ "$1" != "--noclean" ]]; then
+  [[ -d target ]] && rm -rfv target
+else
+  shift
+fi
+
+# exit if all we want is clean
+if [[ "$1" != "--clean" && "$1" != "-c" ]]; then
+  # source global vars if needed
+  GLOBAL_VARS_PATH=$(realpath $(dirname $0)/global_vars)
+  [[ -f $GLOBAL_VARS_PATH ]] && source $GLOBAL_VARS_PATH
+
+  # find scripts to process and the process them
+  if [[ -x $1 ]]; then
+    BUILD_SCRIPT_ARRAY=$(echo "$@")
+  else
+    BUILD_SCRIPT_ARRAY="$(echo */build_rpm)"
+  fi
+
+  for BUILD_SCRIPT in $(echo $BUILD_SCRIPT_ARRAY); do
+    [[ -x $BUILD_SCRIPT ]] && $BUILD_SCRIPT
+  done
+fi
+
+echo "Total time for the '$0' script to run is ${SECONDS}s"

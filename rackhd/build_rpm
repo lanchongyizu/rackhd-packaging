@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# Copyright 2017 Dell Inc. or its subsidiaries. All Rights Reserved.
+# Dell EMC Confidential/Proprietary Information.
+#
+
+# Script creates rpm for docker containers
+
+#source $(realpath $(dirname $0))/lib/process_docker
+
+#get the current directory of this file
+SCRIPT_DIR="$( cd "$(dirname $0)" && pwd)"
+
+# we store the process_docker script relative to the base script in /lib
+. $SCRIPT_DIR/lib/process_docker
+
+[[ -z "$BUILD_NUMBER" ]] && export BUILD_NUMBER=0
+SPEC_PATH=$(dirname $(realpath $0))
+GIT_PATH=$(realpath $SPEC_PATH/..)
+VERSION=$(cat $GIT_PATH/.version)
+
+TARGET_DIR=${PWD}/target
+BUILD_ROOT=${TARGET_DIR}/rpmbuild
+export TAG=latest
+
+echo "TARGET_DIR - ${TARGET_DIR}"
+echo "BUILD_ROOT - ${BUILD_ROOT}"
+
+[ -d ${BUILD_ROOT} ] || mkdir -p ${BUILD_ROOT}
+
+ARCH=x86_64
+
+# ESTS-137452 Some jenkins slaves had their local docker repositories polluted
+# with the patched version of rackhd/on-taskgraph that this file builds below.
+docker rmi rackhd/on-taskgraph:2.29.0
+
+. $SCRIPT_DIR/.env
+process_docker save rackhd/docker-compose.yml
+
+# Customize on-taskgraph for idracadm7
+docker build -t rackhd/on-taskgraph:${TAG}-symphony rackhd/
+docker save rackhd/on-taskgraph:${TAG} >  ${TARGET_DIR}/rackhd_taskgraph.tar
+
+wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/secure.erase.overlay.cpio-1.gz -O rackhd/secure.erase.overlay.cpio.gz
+wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/ESXi-3299935-vce-Quanta.iso -O rackhd/ESXi-3299935-vce-Quanta.iso
+wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/EMC_bootbank_scaleio-sdc-esx6.0_2.0-7058.0.vib -O rackhd/EMC_bootbank_scaleio-sdc-esx6.0_2.0-7058.0.vib
+wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/VMware-VMvisor-Installer-6.0.0.update03-5224934.x86_64-Dell_Customized-A01.iso -O rackhd/VMware-VMvisor-Installer-6.0.0.update03-5224934.x86_64-Dell_Customized-A01.iso
+
+
+if [ -z "${GPG_PASSPHRASE}" ]; then
+    rpmbuild -bb rackhd/rackhd.spec --buildroot ${BUILD_ROOT} --target ${ARCH}-linux --define "_topdir ${BUILD_ROOT}" --define "_rpmdir ${TARGET_DIR}" --define '_builddir %{_topdir}' --define "_sourcedir ${PWD}" --define "_revision ${BUILD_NUMBER}" --define "_version ${VERSION}"
+else
+    echo ${GPG_PASSPHRASE} | rpmbuild -bb rackhd/rackhd.spec --sign --buildroot ${BUILD_ROOT} --target ${ARCH}-linux --define "_topdir ${BUILD_ROOT}" --define "_rpmdir ${TARGET_DIR}" --define '_builddir %{_topdir}' --define "_sourcedir ${PWD}" --define "_revision ${BUILD_NUMBER}" --define "_version ${VERSION}"
+fi
+
+echo
+
+rpm -qpli ${TARGET_DIR}/${ARCH}/*.rpm
+
+rm ${TARGET_DIR}/*.tar

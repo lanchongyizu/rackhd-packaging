@@ -1,0 +1,53 @@
+commit a5ba0afaa134d14967d2f705e3b4eb7db76a2feb
+Author: Gavin Scott <gavin_scott@dell.com>
+Date:   Tue Oct 24 15:31:25 2017 -0500
+
+    Add ESXi installer option for clearing disk partitions
+    
+    Add `clearDisk` option to Graph.InstallESXi to allow better control
+    over the `clearpart` command which is used to clear disk partition
+    tables during OS install. Valid `clearDisk` values are:
+    
+    - `null` or unspecified: only clear the partition table on the disk
+      the OS is being installed to. This is the same behavior as prior to
+      this change.
+    
+    - `alldrives`: clear the partition table on all drives.
+    
+    - or a disk path that the OS can recognize.
+
+diff --git a/lib/task-data/schemas/install-esxi.json b/lib/task-data/schemas/install-esxi.json
+index ee6c7c2..01dcfdc 100644
+--- a/lib/task-data/schemas/install-esxi.json
++++ b/lib/task-data/schemas/install-esxi.json
+@@ -1,6 +1,20 @@
+ {
+     "copyright": "Copyright 2016, EMC, Inc.",
+     "definitions": {
++        "ClearDisk": {
++            "description": "The disk(s) that will have their partition tables cleared by the ESXi installer",
++            "oneOf": [
++                {
++                    "type": "string",
++                    "description": "a disk path that the OS can recognize or 'alldrives' to clear the partition tables on every drive",
++                    "minLength": 1
++                },
++                {
++                    "type": "null",
++                    "description": "only clear the partition tables on the disk the OS is being installed to"
++                }
++            ]
++        },
+         "PostInstallCommands": {
+             "type": "array",
+             "description": "A list of commands that will be run at the end of the post installation step, this can be used by the customer to tweak final system configuration",
+@@ -103,6 +117,9 @@
+         "installDisk": {
+             "$ref": "types-installos.json#/definitions/InstallDisk"
+         },
++        "clearDisk": {
++            "$ref": "#/definitions/ClearDisk"
++        },
+         "profile": {
+             "$ref": "types-installos.json#/definitions/Profile"
+         },

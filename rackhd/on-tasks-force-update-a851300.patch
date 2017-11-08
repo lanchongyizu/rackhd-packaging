@@ -1,0 +1,50 @@
+commit a851300fd071cce689fc15cc49861d7b5de929dc
+Author: Gavin Scott <gavin_scott@dell.com>
+Date:   Tue Oct 10 20:59:29 2017 -0500
+
+    Add forceUpdate option to UpdateSystemComponents
+    
+    Add new smi-service-dell-server-configuration-profile updateComponents
+    API forceUpdate parameter to Graph.Dell.Wsman.UpdateSystemComponents.
+    
+    When forceUpdate is set to true it allows the service to set attribute
+    values that are normally commented out in the exported SCP file
+    (i.e. the file that can be obtained by running
+    Graph.Dell.Wsman.Export.SCP). Examples of commented out attributes are
+    the BIOS boot sequence and hard drive sequence. When set to false (the
+    default and original UpdateSysystemComponetns behavior) those values
+    are silently discarded.
+    
+    The forceUpdate flag was added in
+    smi-service-dell-server-configuration-profile [PR #16][1].
+    
+    [1]: https://github.com/RackHD/smi-service-dell-server-configuration-profile/pull/16
+
+diff --git a/lib/jobs/dell-wsman-update-systemcomponents.js b/lib/jobs/dell-wsman-update-systemcomponents.js
+index bf85572..cd54c48 100644
+--- a/lib/jobs/dell-wsman-update-systemcomponents.js
++++ b/lib/jobs/dell-wsman-update-systemcomponents.js
+@@ -107,7 +107,8 @@ function DellWsmanUpdateSystemConfigComponentsFactory(
+                 "shareType": this.options.shareType,
+                 "shutdownType": this.options.shutdownType
+             },
+-            "serverComponents": this.options.serverComponents
++            "serverComponents": this.options.serverComponents,
++            "forceUpdate": this.options.forceUpdate
+         };
+ 
+         var gateway = self.dell.gateway;
+diff --git a/lib/task-data/tasks/dell-wsman-update-systemcomponents.js b/lib/task-data/tasks/dell-wsman-update-systemcomponents.js
+index a3daf2c..770cf4c 100644
+--- a/lib/task-data/tasks/dell-wsman-update-systemcomponents.js
++++ b/lib/task-data/tasks/dell-wsman-update-systemcomponents.js
+@@ -16,7 +16,8 @@ module.exports = {
+         fileName:null,
+         shutdownType: null,
+         serverComponents: null,
+-        cleanup: null
++        cleanup: null,
++        forceUpdate: null
+     },
+     properties: {}
+ };

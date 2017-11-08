@@ -1,0 +1,36 @@
+commit 1ffbf9032341aebea8df8c45607e424ef696ac06
+Author: Anitha Srinivasan <anitha.srinivasan@emc.com>
+Date:   Fri Sep 8 16:09:56 2017 -0400
+
+    fix invalid node issue
+    
+    Signed-off-by: Geoff Reid <geoffrey.reid@dell.com>
+
+diff --git a/lib/task-scheduler.js b/lib/task-scheduler.js
+index 6ce4a05..f3a1bcd 100644
+--- a/lib/task-scheduler.js
++++ b/lib/task-scheduler.js
+@@ -393,8 +393,10 @@ function taskSchedulerFactory(
+         })
+         .map(function(graph) {
+             var obj =  _.pick(graph, ['instanceId', '_status', 'node', 'name']);
+-            // Change node Id from object to string
+-            obj.node = obj.node.toString();
++            if(obj.node) {
++                // Change node Id from object to string
++                obj.node = obj.node.toString();
++            }
+             return obj;
+         })
+         .tap(self._publishGraphFinished.bind(self))
+@@ -433,7 +435,9 @@ function taskSchedulerFactory(
+         // the graph state. Don't publish the same event twice.
+         .filter(function(graph) {
+             graph._id = graph._id.toString();
+-            graph.node = graph.node.toString();
++            if(graph.node) {
++                graph.node = graph.node.toString();
++            }
+             return graph;
+         })
+         .tap(self._publishGraphFinished.bind(self))

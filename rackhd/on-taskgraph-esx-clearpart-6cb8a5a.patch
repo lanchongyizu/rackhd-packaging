@@ -1,0 +1,44 @@
+commit 6cb8a5a70bf8c0c8b60a3ec5f7b5415307c37b20
+Author: Gavin Scott <gavin_scott@dell.com>
+Date:   Tue Oct 24 15:23:02 2017 -0500
+
+    Add ESXi installer option for clearing disk partitions
+    
+    Add `clearDisk` option to Graph.InstallESXi to allow better control
+    over the `clearpart` command which is used to clear disk partition
+    tables during OS install. Valid `clearDisk` values are:
+    
+    - `null` or unspecified: only clear the partition table on the disk
+      the OS is being installed to. This is the same behavior as prior to
+      this change.
+    
+    - `alldrives`: clear the partition table on all drives.
+    
+    - or a disk path that the OS can recognize.
+
+diff --git a/data/templates/esx-ks b/data/templates/esx-ks
+index 529b210..2695ffa 100644
+--- a/data/templates/esx-ks
++++ b/data/templates/esx-ks
+@@ -1,9 +1,19 @@
+ accepteula
+-<% if (installDisk === "firstdisk") { %>
++<% if (typeof clearDisk === 'undefined') { %>
++<%   clearDisk = installDisk %>
++<% } %>
++
++<% if (clearDisk === 'firstdisk') { %>
+   clearpart --firstdisk --overwritevmfs
++<% } else if (clearDisk === 'alldrives') { %>
++  clearpart --alldrives --overwritevmfs
++<% } else { %>
++  clearpart --drives=<%=clearDisk%> --overwritevmfs
++<% } %>
++
++<% if (installDisk === "firstdisk") { %>
+   install --firstdisk --overwritevmfs
+ <% } else { %>
+-  clearpart --drives=<%=installDisk%> --overwritevmfs
+   install --disk=<%=installDisk%> --overwritevmfs
+ <% } %>
+ rootpw <%=rootPlainPassword%>
