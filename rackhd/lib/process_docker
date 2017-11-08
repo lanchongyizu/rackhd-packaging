@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+#
+# WARNING: This breaks when run under bash.
 
 process_docker() {
    action=$1
