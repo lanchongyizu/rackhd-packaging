@@ -11,6 +11,7 @@ Vendor: Dell Inc.
 Group: System Environment/Dell Inc. Applications
 URL: http://www.dell.com
 Requires: nfs-utils
+Requires: dell-cpsd-container-bootstrap
 
 %define _use_internal_dependency_generator 0
 %define __find_requires %{nil}
