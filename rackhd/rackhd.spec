@@ -98,9 +98,9 @@ exit 0
 ##############################################################################
 %post
 if [ $1 -eq 1 ];then
-    /bin/sh /opt/dell/cpsd/rackhd/install/install.sh
+    /opt/dell/cpsd/rackhd/install/install.sh
 elif [ $1 -eq 2 ];then
-    /bin/sh /opt/dell/cpsd/rackhd/install/upgrade.sh
+    /opt/dell/cpsd/rackhd/install/upgrade.sh
 else
     echo "Unexpected argument passed to RPM %post script: [$1]"
     exit 1

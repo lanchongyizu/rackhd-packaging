@@ -1,43 +1,38 @@
-#!/usr/bin/env sh
-#
-# WARNING: This breaks when run under bash.
+#!/usr/bin/env bash
 
 process_docker() {
    action=$1
    compose_file=$2
 
-   eval $(local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-   sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
-        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $compose_file |
-   awk -F$fs '{
-      indent = length($1)/2;
-      vname[indent] = $2;
-      for (i in vname) {if (i > indent) {delete vname[i]}}
-      if (length($3) > 0) {
-         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
-         printf("%s%s=\"%s\"\n",vn, $2, $3);
-      }
-   }')
+   tmpfile=$(mktemp)
 
-   for var in $(set | strings | grep -e 'services_.\+_image=' | sed -e 's|services_\(.\+\)_image=|\1=|')
-   do
-      key=$(echo $var | cut -d= -f1)
-      value=$(echo $var | cut -d= -f2- | tr -d "'")
+   # Save standardized, validated config
+   pushd `dirname $compose_file`
+   docker-compose config > $tmpfile
 
-      case $action in
-         save )
-            docker pull $value
-            docker save $value > ${TARGET_DIR}/$key.tar
-            ;;
+   containers=($(awk '{if ($1 == "container_name:") print $2;}' $tmpfile))
+   images=($(awk '{if ($1 == "image:") print $2;}' $tmpfile))
 
-         load )
-            docker load -i ../image/$key.tar
-            ;;
+   rm $tmpfile
+   popd
 
-         delete )
-            docker rmi $value
-            ;;
-      esac
+   for ((i=0;i<${#containers[@]};++i)); do
+       container=${containers[$i]}
+       image=${images[$i]}
 
+       case $action in
+           save )
+               docker pull $image
+               docker save $image > ${TARGET_DIR}/$container.tar
+               ;;
+
+           load )
+               docker load -i ../image/$container.tar
+               ;;
+
+           delete )
+               docker rmi $image
+               ;;
+       esac
    done
 }
