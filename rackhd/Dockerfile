@@ -1,4 +1,4 @@
-FROM docker.io/rackhd/on-taskgraph:2.30.0
+FROM docker.io/rackhd/on-taskgraph:2.31.0
 
 RUN echo 'deb http://linux.dell.com/repo/community/ubuntu wheezy openmanage' | tee -a /etc/apt/sources.list.d/linux.dell.com.sources.list
 RUN gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-key 1285491434D8786F
@@ -23,14 +23,3 @@ RUN patch -p1 -d /RackHD/on-taskgraph < on-taskgraph-esx-clearpart-6cb8a5a.patch
 
 COPY on-tasks-esx-clearpart-a5ba0af.patch ./
 RUN patch -p1 -d /RackHD/on-tasks < on-tasks-esx-clearpart-a5ba0af.patch
-
-
-# Various fixes for UpdateSystemConfig after wsman refactor
-#
-# The wsman jobs were heavily refactored in 2.29.0 and the
-# UpdateSystemComponents job broke.
-#
-# https://github.com/RackHD/on-tasks/pull/545
-
-COPY on-tasks-fix-update-components-timeout-08fb7a.patch ./
-RUN patch -p1 -d /RackHD/on-tasks < on-tasks-fix-update-components-timeout-08fb7a.patch
