@@ -75,6 +75,7 @@
     "wssBindAddress": "0.0.0.0",
     "wssBindPort": 9100,
     "skipResetPostDiscovery": "true",
+    "discoveryGraph": "Graph.SKU.Orig.Discovery",
     "defaultIbms": {
       "user": "monorail",
       "password": "monorail"
