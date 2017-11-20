@@ -1,4 +1,4 @@
-FROM docker.io/rackhd/on-taskgraph:2.31.0
+FROM docker.io/rackhd/on-taskgraph:2.32.0
 
 RUN echo 'deb http://linux.dell.com/repo/community/ubuntu wheezy openmanage' | tee -a /etc/apt/sources.list.d/linux.dell.com.sources.list
 RUN gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-key 1285491434D8786F
