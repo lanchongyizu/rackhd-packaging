@@ -1,0 +1,2 @@
+export PKG_NAME=on-taskgraph
+export CONT_NAME=rackhd/on-taskgraph:${TAG}-symphony

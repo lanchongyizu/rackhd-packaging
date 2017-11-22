@@ -1,4 +1,5 @@
-FROM docker.io/rackhd/on-taskgraph:2.32.0
+ARG TAG
+FROM docker.io/rackhd/on-taskgraph:${TAG}
 
 RUN echo 'deb http://linux.dell.com/repo/community/ubuntu wheezy openmanage' | tee -a /etc/apt/sources.list.d/linux.dell.com.sources.list
 RUN gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-key 1285491434D8786F
@@ -10,7 +11,7 @@ RUN apt-get install -y srvadmin-idracadm7
 #
 # https://github.com/RackHD/on-tasks/pull/523
 
-COPY on-tasks-ipmi-user-list-b16603c.patch ./
+COPY patches/on-tasks-ipmi-user-list-b16603c.patch ./
 RUN patch -p1 -d /RackHD/on-tasks < on-tasks-ipmi-user-list-b16603c.patch
 
 # Add ESXi installer option for clearing disk partitions
@@ -18,8 +19,8 @@ RUN patch -p1 -d /RackHD/on-tasks < on-tasks-ipmi-user-list-b16603c.patch
 # https://github.com/RackHD/on-taskgraph/pull/309
 # https://github.com/RackHD/on-tasks/pull/532
 
-COPY on-taskgraph-esx-clearpart-6cb8a5a.patch ./
+COPY patches/on-taskgraph-esx-clearpart-6cb8a5a.patch ./
 RUN patch -p1 -d /RackHD/on-taskgraph < on-taskgraph-esx-clearpart-6cb8a5a.patch
 
-COPY on-tasks-esx-clearpart-a5ba0af.patch ./
+COPY patches/on-tasks-esx-clearpart-a5ba0af.patch ./
 RUN patch -p1 -d /RackHD/on-tasks < on-tasks-esx-clearpart-a5ba0af.patch

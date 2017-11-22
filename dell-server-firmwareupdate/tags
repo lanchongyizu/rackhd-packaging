@@ -1,0 +1,2 @@
+export PKG_NAME=dell-server-firmwareupdate
+export CONT_NAME=rackhd/dell-server-firmwareupdate:${SMI_TAG}

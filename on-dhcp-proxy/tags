@@ -1,0 +1,2 @@
+export PKG_NAME=on-dhcp-proxy
+export CONT_NAME=rackhd/on-dhcp-proxy:${TAG}

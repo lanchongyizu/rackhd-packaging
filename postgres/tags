@@ -1,0 +1,2 @@
+export PKG_NAME=postgres
+export CONT_NAME=postgres:${POSTGRES_TAG}

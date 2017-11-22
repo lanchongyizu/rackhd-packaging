@@ -1,0 +1,2 @@
+export PKG_NAME=mongo
+export CONT_NAME=mongo:${LATEST_TAG}

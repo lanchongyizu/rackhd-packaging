@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+(
+    cd $TAR_PATH
+    docker build --build-arg TAG=$TAG -t $CONT_NAME .
+)

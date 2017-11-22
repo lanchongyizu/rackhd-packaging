@@ -1,0 +1,2 @@
+export PKG_NAME=on-http
+export CONT_NAME=rackhd/on-http:${TAG}

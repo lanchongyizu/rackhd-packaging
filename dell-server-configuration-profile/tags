@@ -1,0 +1,2 @@
+export PKG_NAME=dell-server-configuration-profile
+export CONT_NAME=rackhd/dell-server-configuration-profile:${DEVELOP_TAG}

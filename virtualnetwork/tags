@@ -1,0 +1,2 @@
+export PKG_NAME=virtualnetwork
+export CONT_NAME=rackhd/virtualnetwork:${SMI_TAG}

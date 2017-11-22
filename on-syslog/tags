@@ -1,0 +1,2 @@
+export PKG_NAME=on-syslog
+export CONT_NAME=rackhd/on-syslog:${TAG}

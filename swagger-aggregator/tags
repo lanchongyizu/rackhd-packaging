@@ -1,0 +1,2 @@
+export PKG_NAME=swagger-aggregator
+export CONT_NAME=rackhd/swagger-aggregator:${SMI_TAG}

@@ -1,0 +1,2 @@
+export PKG_NAME=virtualidentity
+export CONT_NAME=rackhd/virtualidentity:${SMI_TAG}

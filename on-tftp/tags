@@ -1,0 +1,2 @@
+export PKG_NAME=on-tftp
+export CONT_NAME=rackhd/on-tftp:${TAG}

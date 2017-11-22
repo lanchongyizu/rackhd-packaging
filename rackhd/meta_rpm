@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+(
+    cd $TAR_PATH
+    cp $GIT_PATH/.env install/
+    wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/secure.erase.overlay.cpio-1.gz -O secure.erase.overlay.cpio.gz
+    wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/ESXi-3299935-vce-Quanta.iso -O ESXi-3299935-vce-Quanta.iso
+    wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/EMC_bootbank_scaleio-sdc-esx6.0_2.0-7058.0.vib -O EMC_bootbank_scaleio-sdc-esx6.0_2.0-7058.0.vib
+    wget http://artifactory.mpe.lab.vce.com:8080/artifactory/cpsd-generic-files/rackhd-artifacts/VMware-VMvisor-Installer-6.0.0.update03-5224934.x86_64-Dell_Customized-A01.iso -O VMware-VMvisor-Installer-6.0.0.update03-5224934.x86_64-Dell_Customized-A01.iso
+)

@@ -13,6 +13,7 @@ fi
 
 SCRIPT_ROOT=$(realpath $(dirname $0))
 cd $SCRIPT_ROOT
+BUILD_SCRIPT=$SCRIPT_ROOT/build_rpm
 
 # clean up old jobs
 if [[ "$1" != "--noclean" ]]; then
@@ -24,18 +25,25 @@ fi
 # exit if all we want is clean
 if [[ "$1" != "--clean" && "$1" != "-c" ]]; then
   # source global vars if needed
-  GLOBAL_VARS_PATH=$(realpath $(dirname $0)/global_vars)
-  [[ -f $GLOBAL_VARS_PATH ]] && source $GLOBAL_VARS_PATH
+  GLOBAL_VARS_PATH=$(realpath $(dirname $0)/.env)
+  if [ -f $GLOBAL_VARS_PATH ]
+  then
+#    source $GLOBAL_VARS_PATH
+    while IFS='' read -r line; do
+     [[ "$line" =~ ^#.* ]] && continue
+        export $line
+    done < $GLOBAL_VARS_PATH
+  fi
 
   # find scripts to process and the process them
   if [[ -x $1 ]]; then
     BUILD_SCRIPT_ARRAY=$(echo "$@")
   else
-    BUILD_SCRIPT_ARRAY="$(echo */build_rpm)"
+    BUILD_SCRIPT_ARRAY="$(echo */*.spec)"
   fi
 
-  for BUILD_SCRIPT in $(echo $BUILD_SCRIPT_ARRAY); do
-    [[ -x $BUILD_SCRIPT ]] && $BUILD_SCRIPT
+  for SPEC in $(echo $BUILD_SCRIPT_ARRAY); do
+    [[ -x $BUILD_SCRIPT ]] && $BUILD_SCRIPT $SPEC
   done
 fi
 

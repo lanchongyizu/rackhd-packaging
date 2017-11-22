@@ -1,0 +1,2 @@
+export PKG_NAME=consul
+export CONT_NAME=consul:${CONSUL_TAG}

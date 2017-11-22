@@ -1,0 +1,2 @@
+export PKG_NAME=rabbitmq
+export CONT_NAME=rabbitmq:${RABBIT_MQ_TAG}

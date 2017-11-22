@@ -1,0 +1,2 @@
+export PKG_NAME=dell-powerthermal-monitoring
+export CONT_NAME=rackhd/dell-powerthermal-monitoring:${SMI_TAG}

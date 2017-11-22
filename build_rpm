@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#
+# Copyright 2017 Dell Inc. or its subsidiaries. All Rights Reserved.
+# Dell EMC Confidential/Proprietary Information.
+#
+
+set -x
+
+SPEC_PATH=$(dirname $(realpath $1))
+source $SPEC_PATH/tags
+
+[[ -z "$BUILD_NUMBER" ]] && export BUILD_NUMBER=0
+[[ -z "$RPM_NAME" ]] && export RPM_NAME=dell-cpsd-rackhd-$PKG_NAME
+
+GIT_PATH=$(realpath $SPEC_PATH/..)
+WORKSPACE=$GIT_PATH/target
+BUILD_ROOT=$WORKSPACE/rpmbuild
+SPEC_FILE=$(echo $SPEC_PATH/*.spec | head -n1)
+VERSION=$(cat $GIT_PATH/.version)
+TAR_NAME="$RPM_NAME-$VERSION"
+TAR_PATH=$WORKSPACE/$TAR_NAME
+
+set +x
+
+mkdir -vp $TAR_PATH
+cp -r -v $SPEC_PATH/* $TAR_PATH
+
+if [[ -e $SPEC_PATH/meta_rpm ]]
+then
+    source $SPEC_PATH/meta_rpm
+else
+    if [[ -e $SPEC_PATH/customize_container ]]
+    then
+        source $SPEC_PATH/customize_container
+    else
+        docker pull $CONT_NAME
+    fi
+    docker save $CONT_NAME > $TAR_PATH/$PKG_NAME.tar
+    docker rmi $CONT_NAME
+fi
+
+tar -cvzf $TAR_PATH.tgz -C $WORKSPACE $TAR_NAME
+
+rm -rfv $TAR_PATH
+
+if [ -z "${GPG_PASSPHRASE}" ]
+then
+    rpmbuild -tb $TAR_PATH.tgz \
+        --clean \
+        --define "_topdir $BUILD_ROOT" \
+        --define "_name $RPM_NAME" \
+        --define "_revision $BUILD_NUMBER" \
+        --define "_version $VERSION"
+
+else
+    echo ${GPG_PASSPHRASE} | rpmbuild -tb $TAR_PATH.tgz \
+        --sign \
+        --clean \
+        --define "_topdir $BUILD_ROOT" \
+        --define "_name $RPM_NAME" \
+        --define "_revision $BUILD_NUMBER" \
+        --define "_version $VERSION"
+fi
+
+rm -fv $TAR_PATH.tgz

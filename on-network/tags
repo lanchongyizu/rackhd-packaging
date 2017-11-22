@@ -1,0 +1,2 @@
+export PKG_NAME=on-network
+export CONT_NAME=rackhd/on-network:${LATEST_TAG}

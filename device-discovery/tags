@@ -1,0 +1,2 @@
+export PKG_NAME=device-discovery
+export CONT_NAME=rackhd/device-discovery:${SMI_TAG}

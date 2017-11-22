@@ -47,7 +47,7 @@ pipeline {
         }
         stage('Upload to Repo') {
             steps {
-                uploadArtifactsToArtifactory()
+                uploadArtifactsToArtifactory("master|rpm-packaging|q3stable")
             }
         }
         /*

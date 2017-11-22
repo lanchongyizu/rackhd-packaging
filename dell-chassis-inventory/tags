@@ -1,0 +1,2 @@
+export PKG_NAME=dell-chassis-inventory
+export CONT_NAME=rackhd/dell-chassis-inventory:${SMI_TAG}

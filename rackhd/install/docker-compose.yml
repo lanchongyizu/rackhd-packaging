@@ -10,7 +10,7 @@ services:
 
   #### Dependent Services / Functions ####
   rackhd_rabbitmq:
-    image: rabbitmq:3.6-management-alpine
+    image: rabbitmq:${RABBIT_MQ_TAG}
     environment:
       - RABBITMQ_ERLANG_COOKIE=homer_simpson
     container_name: amqp
@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
 
   rackhd_consul:
-    image: consul:0.9.3
+    image: consul:${CONSUL_TAG}
     container_name: consul
     hostname: consul
     ports:

@@ -1,0 +1,2 @@
+export PKG_NAME=files
+export CONT_NAME=rackhd/files:${TAG}

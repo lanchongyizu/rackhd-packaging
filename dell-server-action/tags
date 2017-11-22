@@ -1,0 +1,2 @@
+export PKG_NAME=dell-server-action
+export CONT_NAME=rackhd/dell-server-action:${SMI_TAG}
