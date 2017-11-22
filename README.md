@@ -8,7 +8,7 @@
 # thirdparty-rpm-generator
 
 ## Description
-This respository contains the code to customize versions of the following third-party applications: Consul, Vault, RabbitMQ, PostgreSQL and RackHD. Each third-party application is deployed as a Docker image which is then packaged into an rpm.
+This respository contains the code to customize versions of RackHD. Each RackHD component is deployed as a Docker image which is then packaged into an rpm.
 
 ## Documentation
 You can find additional documentation for Project Symphony at [dellemc-symphony.readthedocs.io][documentation].
@@ -23,7 +23,7 @@ Verify that the latest versions of the following tools are installed:
 Windows development is not currently supported.
 
 ## Building
-1. Navigate to the `thirdparty-rpm-generator` folder.
+1. Navigate to the project home directory.
 2. Run the following command to update the version of the rpms:
 
 ` ./unsupported/update-version-number`
@@ -33,10 +33,11 @@ Windows development is not currently supported.
 `./create_rpms`
 
 The following rpms should be inside the `target/rpmbuild/RPMS/x86_64/ folder`:
-* `dell-cpsd-consul-<version>.x86_64.rpm`
-* `dell-cpsd-postgres-<version>.x86_64.rpm`
-* `dell-cpsd-rabbitmq-<version>.x86_64.rpm`
-* `dell-cpsd-vault-<version>.x86_64.rpm`
+* `dell-cpsd-rackhd-device-discovery-<version>.x86_64.rpm`
+* `dell-cpsd-rackhd-files-<version>.x86_64.rpm`
+* `dell-cpsd-rackhd-isc-dhcp-server-<version>.x86_64.rpm`
+* `dell-cpsd-rackhd-all-<version>.x86_64.rpm`
+and more rpms for each RackHD component.
    
 ## Deploying
 Run the following command to update the yum cache: 
@@ -45,7 +46,13 @@ Run the following command to update the yum cache:
 
 Run the following command to install the rpm:
 
-`yum localinstall ./target/rpmbuild/RPMS/x86_64/dell-cpsd-<rpm name>-<version>.x86_64.rpm`
+For full RackHD install:
+`yum localinstall ./target/rpmbuild/RPMS/x86_64/dell-cpsd-rackhd-all-<version>.x86_64.rpm`
+Alternatively for individual rpm install:
+`yum localinstall ./target/rpmbuild/RPMS/x86_64/dell-cpsd-rackhd-<rpm name>-<version>.x86_64.rpm`
+
+For remote install using master repo:
+`yum install dell-cpsd-rackhd-all`
 
 ## Community
 Reach out to us on the Slack [#symphony][slack] channel. Request an invite at [{code}Community][codecommunity].
