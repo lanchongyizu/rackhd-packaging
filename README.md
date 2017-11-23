@@ -5,10 +5,10 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.dell.cpsd/credential-service-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dell.cpsd/credential-service-parent)
 [![Semver](http://img.shields.io/SemVer/2.0.0.png)](http://semver.org/spec/v2.0.0.html)
 
-# thirdparty-rpm-generator
+# rackhd-packaging
 
 ## Description
-This respository contains the code to customize versions of RackHD. Each RackHD component is deployed as a Docker image which is then packaged into an rpm.
+This respository contains the code to customize versions of RackHD. Each RackHD component is deployed as a Docker image and packaged as an rpm.
 
 ## Documentation
 You can find additional documentation for Project Symphony at [dellemc-symphony.readthedocs.io][documentation].
@@ -23,35 +23,38 @@ Verify that the latest versions of the following tools are installed:
 Windows development is not currently supported.
 
 ## Building
-1. Navigate to the project home directory.
-2. Run the following command to update the version of the rpms:
+1. Navigate to the `project home` directory.
+2. To update the version of the rpms, type:
 
 ` ./unsupported/update-version-number`
 
-3. Run the following command to build the rpms:
+3. To build the rpms, type:
 
 `./create_rpms`
 
-The following rpms should be inside the `target/rpmbuild/RPMS/x86_64/ folder`:
+4. Ensure that the master RackHD rpm and any RackHD component rpms are in the `target/rpmbuild/RPMS/x86_64/` folder.
+For example:
+* `dell-cpsd-rackhd-all-<version>.x86_64.rpm`
 * `dell-cpsd-rackhd-device-discovery-<version>.x86_64.rpm`
 * `dell-cpsd-rackhd-files-<version>.x86_64.rpm`
 * `dell-cpsd-rackhd-isc-dhcp-server-<version>.x86_64.rpm`
-* `dell-cpsd-rackhd-all-<version>.x86_64.rpm`
-and more rpms for each RackHD component.
+
    
 ## Deploying
-Run the following command to update the yum cache: 
+To update the yum cache, type: 
 
 `yum makecache fast`
 
-Run the following command to install the rpm:
+To install all RackHD rpms, type:
 
-For full RackHD install:
 `yum localinstall ./target/rpmbuild/RPMS/x86_64/dell-cpsd-rackhd-all-<version>.x86_64.rpm`
-Alternatively for individual rpm install:
+
+To install individual RackHD rpms, type:
+
 `yum localinstall ./target/rpmbuild/RPMS/x86_64/dell-cpsd-rackhd-<rpm name>-<version>.x86_64.rpm`
 
-For remote install using master repo:
+To install all RackHD rpms using the master repository, type:
+
 `yum install dell-cpsd-rackhd-all`
 
 ## Community
