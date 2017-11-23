@@ -57,6 +57,10 @@ To install all RackHD rpms using the master repository, type:
 
 `yum install dell-cpsd-rackhd-all`
 
+## Removing
+To remove all RackHD components
+`yum autoremove dell-cpsd-rackhd-all`
+
 ## Community
 Reach out to us on the Slack [#symphony][slack] channel. Request an invite at [{code}Community][codecommunity].
 
