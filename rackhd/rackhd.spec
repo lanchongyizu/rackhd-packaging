@@ -178,8 +178,8 @@ exit 0
 
 %files
 
-%attr(0754,rackhd,dell) %dir /opt/dell/public
-%attr(0754,rackhd,dell) %dir /opt/dell/public/write
+%attr(0755,rackhd,dell) %dir /opt/dell/public
+%attr(0777,rackhd,dell) %dir /opt/dell/public/write
 %attr(0754,rackhd,dell) %dir /opt/dell/cpsd/rackhd/
 %attr(0754,rackhd,dell) %dir /opt/dell/cpsd/rackhd/install
 %attr(0754,rackhd,dell) %dir /opt/dell/cpsd/rackhd/conf
