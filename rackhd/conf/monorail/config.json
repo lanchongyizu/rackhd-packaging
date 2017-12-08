@@ -81,7 +81,7 @@
       "password": "monorail"
     },
     "onNetwork": {
-       "url": "localhost:33080",
+       "url": "http://localhost:33080",
        "username": "admin",
        "password": "Password123!"
     }
