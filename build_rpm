@@ -4,6 +4,7 @@
 # Dell EMC Confidential/Proprietary Information.
 #
 
+set -o errexit
 set -x
 
 SPEC_PATH=$(dirname $(realpath $1))

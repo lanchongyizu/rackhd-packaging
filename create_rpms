@@ -4,6 +4,8 @@
 # Dell EMC Confidential/Proprietary Information
 #
 
+set -o errexit
+
 # check if --debug flag is set
 if [[ "$1" == "--debug" || "$1" == "-d" ]]; then
   set -x
