@@ -43,7 +43,8 @@ pipeline {
         }
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: '**/*.rpm', fingerprint: false
+                echo "Archiving"
+                //archiveArtifacts artifacts: '**/*.rpm', fingerprint: false
             }
         }
         stage('Upload to Repo') {
