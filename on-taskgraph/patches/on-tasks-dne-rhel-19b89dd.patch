@@ -1,0 +1,161 @@
+commit 19b89dd095b11b7e3e48e4c2f73668ef317ee903
+Author: Sushil Rai <sushil_r@dell.com>
+Date:   Tue Dec 5 20:26:17 2017 +0530
+
+    RHEL 7.2 installation support
+    
+    -  Added support for additional packages
+    -  NIC Bond
+    -  MTU configuration
+    -  Configuring IP gateway as option to non-routable networks
+    -  Enable / Disable list of services
+
+diff --git a/lib/jobs/install-os.js b/lib/jobs/install-os.js
+index ca5a6a0..a68f162 100755
+--- a/lib/jobs/install-os.js
++++ b/lib/jobs/install-os.js
+@@ -93,7 +93,6 @@ function installOsJobFactory(
+                 assert.string(dev.device);
+                 if (dev.ipv4) {
+                     assert.isIP(dev.ipv4.ipAddr, 4);
+-                    assert.isIP(dev.ipv4.gateway, 4);
+                     assert.string(dev.ipv4.netmask);
+                     _.forEach(dev.ipv4.netmask.split('.'), function(item) {
+                         item = +item ? +item : parseInt(item, 16);
+diff --git a/lib/task-data/schemas/install-centos.json b/lib/task-data/schemas/install-centos.json
+index 32dcd8c..7b89c7f 100644
+--- a/lib/task-data/schemas/install-centos.json
++++ b/lib/task-data/schemas/install-centos.json
+@@ -50,6 +50,9 @@
+         "networkDevices": {
+             "$ref": "types-installos.json#/definitions/NetworkDeviceArray"
+         },
++        "bonds": {
++            "$ref": "types-installos.json#/definitions/BondsArray"
++        },
+         "kvm": {
+             "$ref": "types-installos.json#/definitions/Kvm"
+         },
+@@ -61,6 +64,15 @@
+         },
+         "progressMilestones": {
+             "$ref": "types-installos.json#/definitions/ProgressMilestones"
++        },
++        "packages": {
++            "$ref": "types-installos.json#/definitions/PackagesArray"
++        },
++        "disableServices": {
++            "$ref": "types-installos.json#/definitions/DisableServices"
++        },
++        "enableServices": {
++            "$ref": "types-installos.json#/definitions/EnableServices"
+         }
+     },
+     "required": ["osType", "version", "repo", "profile", "installScript",
+diff --git a/lib/task-data/schemas/types-installos.json b/lib/task-data/schemas/types-installos.json
+index 31f621c..83ca130 100644
+--- a/lib/task-data/schemas/types-installos.json
++++ b/lib/task-data/schemas/types-installos.json
+@@ -107,9 +107,15 @@
+                         "$ref": "#/definitions/VlanId"
+                     },
+                     "uniqueItems": true
++                },
++                "mtu": {
++                    "description": "The ipv4 MTU",
++                    "type": "integer",
++                    "minimum": 1500,
++                    "maximum": 9026
+                 }
+             },
+-            "required": ["ipAddr", "netmask", "gateway"],
++            "required": ["ipAddr", "netmask"],
+             "additionalProperties": false
+         },
+         "Ipv6Configuration": {
+@@ -165,6 +171,38 @@
+             "required": ["device"],
+             "additionalProperties": true
+         },
++        "Nics": {
++            "description": "List of NICs",
++            "type": "array",
++            "items": {
++                "type": "string"
++            },
++            "uniqueItems": true
++        },
++        "BondConfig": {
++            "description": "Bond Interface configuration",
++            "type": "object",
++            "properties": {
++                "name": {
++                    "description": "The bond interface name.",
++                    "type": "string"
++                },
++                "nics": {
++                    "description": "the ipv4 configuration for this interface",
++                    "$ref": "#/definitions/Nics"
++                },
++                "ipv4": {
++                    "description": "the ipv4 configuration for this interface",
++                    "$ref": "#/definitions/Ipv4Configuration"
++                },
++                "ipv6": {
++                    "description": "the ipv6 configuration for this interface",
++                    "$ref": "#/definitions/Ipv6Configuration"
++                }
++            },
++            "required": ["name"],
++            "additionalProperties": true
++        },
+         "NetworkDeviceArray": {
+             "description": "The network configuration for each NIC",
+             "type": "array",
+@@ -174,6 +212,15 @@
+             },
+             "uniqueItems": true
+         },
++        "BondsArray": {
++            "description": "Bond Interface configuration definition",
++            "type": "array",
++            "minItems": 1,
++            "items": {
++                "$ref": "#/definitions/BondConfig"
++            },
++            "uniqueItems": true
++        },
+         "PartitionConfig": {
+             "description": "The configuration for a disk partition",
+             "type": "object",
+@@ -319,6 +366,30 @@
+             "type": "string",
+             "description": "Extra (persistent) kernel boot parameters",
+             "minLength": 1
++        },
++        "PackagesArray": {
++            "description": "specify additional packages to install",
++            "type": "array",
++            "items": {
++                "type": "string"
++            },
++            "uniqueItems": true
++        },
++        "EnableServices": {
++            "description": "List of services that needs to be enabled explicitly during post-installation phase",
++            "type": "array",
++            "items": {
++                "type": "string"
++            },
++            "uniqueItems": true
++        },
++        "DisableServices": {
++            "description": "List of services that needs to be disabled during post-installation phase",
++            "type": "array",
++            "items": {
++                "type": "string"
++            },
++            "uniqueItems": true
+         }
+     }
+ }

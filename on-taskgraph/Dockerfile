@@ -24,3 +24,14 @@ RUN patch -p1 -d /RackHD/on-taskgraph < on-taskgraph-esx-clearpart-6cb8a5a.patch
 
 COPY patches/on-tasks-esx-clearpart-a5ba0af.patch ./
 RUN patch -p1 -d /RackHD/on-tasks < on-tasks-esx-clearpart-a5ba0af.patch
+
+# Add RHEL installer options for adding packages and clearing partitions
+#
+# https://github.com/RackHD/on-taskgraph/pull/343
+# https://github.com/RackHD/on-tasks/pull/568
+
+COPY patches/on-taskgraph-dne-rhel-583e0f2.patch ./
+RUN patch -p1 -d /RackHD/on-taskgraph < on-taskgraph-dne-rhel-583e0f2.patch
+
+COPY patches/on-tasks-dne-rhel-19b89dd.patch ./
+RUN patch -p1 -d /RackHD/on-tasks < on-tasks-dne-rhel-19b89dd.patch
