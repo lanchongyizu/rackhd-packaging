@@ -70,6 +70,16 @@ pipeline {
                 doPwScan()
             }
         }
+         stage('BadgeCheck') {
+            steps {
+                doBadgeCheck()
+            }
+        }
+         stage('CheckPom') {
+            steps {
+                doCheckPom()
+            }
+        }
         stage('Github Release') {
             steps {
                 githubRelease()
