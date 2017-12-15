@@ -38,7 +38,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh "./create_rpms"
+                sh "echo create_rpms"
             }
         }
         stage('Archive Artifacts') {
