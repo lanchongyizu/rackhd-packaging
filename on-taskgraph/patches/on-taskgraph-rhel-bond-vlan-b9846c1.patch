@@ -1,0 +1,73 @@
+commit b9846c117c86ec3098583bd182cf13e431d9dee2
+Author: Sushil Rai <sushil_r@dell.com>
+Date:   Thu Jan 4 10:15:20 2018 +0530
+
+    RHEL 7 Bond VLAN interface support
+    
+    Added support for creating Tagged Bond Interface. This will enable support for having one or multiple tagged sub-interfaces created along with the LACP bond interface
+
+diff --git a/data/templates/centos-ks b/data/templates/centos-ks
+index 8cd3ae6..e079055 100755
+--- a/data/templates/centos-ks
++++ b/data/templates/centos-ks
+@@ -171,19 +171,14 @@ export PATH
+      echo NM_CONTROLLED=no >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+      echo BOOTPROTO=none >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+      echo ONBOOT=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+-     echo IPADDR="<%=n.ipv4.ipAddr%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+-     echo NETMASK="<%=n.ipv4.netmask%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+-     <% if ( undefined != n.ipv4.gateway) { %>
+-          echo GATEWAY="<%=n.ipv4.gateway%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+-     <% } %>
+-     echo DEFROUTE=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+-     echo PEERDNS=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+-
+-     <% if ( undefined != n.ipv4.dns1) { %>
+-        echo DNS1="<%=n.ipv4.dns1%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+-     <% } %>
+-     <% if ( undefined != n.ipv4.dns2) { %>
+-        echo DNS2="<%=n.ipv4.dns2%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
++     <% if ( typeof n.ipv4 != 'undefined' ) { %>
++          echo IPADDR="<%=n.ipv4.ipAddr%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
++          echo NETMASK="<%=n.ipv4.netmask%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
++          <% if ( undefined != n.ipv4.gateway) { %>
++               echo GATEWAY="<%=n.ipv4.gateway%>" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
++          <% } %>
++          echo DEFROUTE=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
++          echo PEERDNS=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+      <% } %>
+ 
+      echo IPV4_FAILURE_FATAL="no" >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>
+@@ -200,7 +195,24 @@ export PATH
+         echo NM_CONTROLLED=no >> /etc/sysconfig/network-scripts/ifcfg-<%=device%>
+         echo SLAVE=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=device%>
+       <%   } %>
+-      <% } %>     
++      <% } %>
++
++      # Bonded VLAN Interface
++      <% if ( typeof n.bondvlaninterfaces != 'undefined' ) { %>
++         <%   for (var i = 0, len = n.bondvlaninterfaces.length; i < len; i++) { %>
++         echo DEVICE=<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>  > /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         echo NAME=<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%> >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         echo BOOTPROTO=none >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         echo ONPARENT=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         echo IPADDR=<%=n.bondvlaninterfaces[i].ipv4.ipAddr%> >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         echo NETMASK=<%=n.bondvlaninterfaces[i].ipv4.netmask%> >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         <% if ( undefined != n.bondvlaninterfaces[i].ipv4.gateway) { %>
++            echo GATEWAY=<%=n.bondvlaninterfaces[i].ipv4.gateway%> >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         <% } %>
++         echo VLAN=yes >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         echo NM_CONTROLLED=no >> /etc/sysconfig/network-scripts/ifcfg-<%=n.name%>.<%=n.bondvlaninterfaces[i].vlanid%>
++         <%   } %>
++       <% } %>
+   <%}) %>
+   
+   systemctl stop NetworkManager
+@@ -335,4 +347,4 @@ done;
+ 
+ ) 2>&1 >>/root/install-post-sh.log
+ EOF
+-%end
++%end
+\ No newline at end of file

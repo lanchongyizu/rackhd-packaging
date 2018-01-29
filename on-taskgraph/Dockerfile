@@ -35,3 +35,11 @@ RUN patch -p1 -d /RackHD/on-taskgraph < on-taskgraph-dne-rhel-583e0f2.patch
 
 COPY patches/on-tasks-dne-rhel-19b89dd.patch ./
 RUN patch -p1 -d /RackHD/on-tasks < on-tasks-dne-rhel-19b89dd.patch
+
+# Add RHEL installer options for configuring bonded vlan interfaces
+#
+# https://github.com/RackHD/on-taskgraph/pull/360
+# Sample payload: https://github.com/RackHD/RackHD/pull/921
+
+COPY patches/on-taskgraph-rhel-bond-vlan-b9846c1.patch ./
+RUN patch -p1 -d /RackHD/on-taskgraph < on-taskgraph-rhel-bond-vlan-b9846c1.patch
