@@ -127,6 +127,7 @@ services:
     volumes:
       - "../files/mount/common:/RackHD/on-http/static/http/common"
       - "../iso:/RackHD/on-http/static/http"
+      - "../conf/monorail/static/http/downloads:/RackHD/on-http/static/files"
       - "../conf/monorail:/opt/monorail"
     restart: unless-stopped
 
